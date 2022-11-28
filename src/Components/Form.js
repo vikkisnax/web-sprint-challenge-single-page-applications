@@ -80,8 +80,35 @@ const formSubmit = (e) => {
 
 
 // // ONCHANGE FUNCTION
+const inputChange = (e) => {
+    //bc passing event asyncronusly - bc of error msg too- read notes
+    e.persist();
+    
+    //clone state, access 'name' key when we access and change its value
+    const newFormState = {
+        ...order, 
+        [e.target.name]: 
+            e.target.type === "checkbox" ? e.target.checked : e.target.value};
+        
+    // ADD LATER - for each error msg 
+    // validateChange(e); // for each change in input, do inline validation. event variable.
+
+setOrder(newFormState)
+};
+
 
 // // SCHEMA - RULES - Implement Form Validation and Error Messaging
+// do this after onChange
+
+
+
+
+
+
+
+
+
+
 
 // // VALIDATE ENTIRE FORM - when form state changes - compare against formSchema. returns promise. 
 
@@ -97,10 +124,11 @@ const formSubmit = (e) => {
             <input
                 id="name-input"
                 type="text"
-                name="name-input"
-                value={order.name}
+                name="name"
+                // same as state key
+                value={order.name} 
                     // ADD
-                // onChange={inputChange}
+                onChange={inputChange}
                     // cypress 
                 // data-cy="" 
             />
@@ -113,23 +141,22 @@ const formSubmit = (e) => {
             Size
             <select
                 id="size-dropdown"
-                type="text"
-                name="size-dropdown"
-                value={order.size}>
-                {/* //     ADD
-                // onChange={inputChange}
-                //     cypress - remove  > above and use it below
-                // data-cy="" >  */}
-            
+                name="size"
+                value={order.size}
+                // ADD 
+                onChange={inputChange}>
+                {/* cypress - remove  > above and use it below
+                data-cy="" >  */}
             
                 <option value="">--- Select Size ---</option>
-                <option value="Small">Small</option>
-                <option value="Medium">Medium</option>
-                <option value="Large">Large</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
             </select>
             {/* error msg errors.name..... */}
         </label>
         </div>
+
 
         {/* 3 Checkboxes */}
         <div className="topping1-check">
@@ -137,10 +164,10 @@ const formSubmit = (e) => {
             <input
                 id="topping1-check"
                 type="checkbox"
-                name="topping1-check"
+                name="topping1"
                 checked={order.topping1}
                     // ADD
-                // onChange={inputChange}
+                onChange={inputChange}
                     // cypress 
                 // data-cy="" 
             />
@@ -154,10 +181,10 @@ const formSubmit = (e) => {
             <input
                 id="topping2-check"
                 type="checkbox"
-                name="topping2-check"
+                name="topping2"
                 checked={order.topping2}
                     // ADD
-                // onChange={inputChange}
+                onChange={inputChange}
                     // cypress 
                 // data-cy="" 
             />
@@ -171,10 +198,10 @@ const formSubmit = (e) => {
             <input
                 id="topping3-check"
                 type="checkbox"
-                name="topping3-check"
+                name="topping3"
                 checked={order.topping3}
                     // ADD
-                // onChange={inputChange}
+                onChange={inputChange}
                     // cypress 
                 // data-cy="" 
             />
@@ -188,10 +215,10 @@ const formSubmit = (e) => {
             <input
                 id="topping4-check"
                 type="checkbox"
-                name="topping4-check"
+                name="topping4"
                 checked={order.topping4}
                     // ADD
-                // onChange={inputChange}
+                onChange={inputChange}
                     // cypress 
                 // data-cy="" 
             />
@@ -206,10 +233,10 @@ const formSubmit = (e) => {
             <input
                 id="special-text"
                 type="text"
-                name="special-text"
+                name="special"
                 value={order.special}
                     // ADD
-                // onChange={inputChange}
+                onChange={inputChange}
                     // cypress 
                 // data-cy="" 
             />
@@ -222,6 +249,7 @@ const formSubmit = (e) => {
         <button 
         id="order-button"
         type="submit" 
+        // instead of using 'value'
         disabled={buttonIsDisabled}>
             Add to Order
         </button>
