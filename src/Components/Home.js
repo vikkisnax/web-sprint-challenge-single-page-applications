@@ -8,6 +8,7 @@ const Home = (props) => {
   return (
     <div id="order-pizza">
         <h1>home component</h1>
+        <h2>HI</h2>
     </div>
   );
 };
