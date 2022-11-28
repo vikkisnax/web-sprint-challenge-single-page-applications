@@ -10,27 +10,41 @@ import axios from "axios";
 const Form = (props) => {
 // console.log(props)
 
-// state 'order' prop
-const order = props.order;
-    // console.log(order)
-const setOrder= props.setOrder;
+const [order, setOrder] = useState([
+    {
+      name:"",
+      size:"",
+      topping1: false,
+      topping2: false,
+      topping3: false,
+      topping4: false,
+      special:""
+    }
+  ]);
 
 
-// //submit - control whether or not the form can be submitted if there are errors in form validation (in the useEffect)
+// //submit button - control whether or not the form can be submitted if there are errors in form validation (in the useEffect)
 const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
+
+
 
 // //server error -- uncomment after you make the .catch to let user know there's a server error
 const [serverError, setServerError] = useState("");
 
+
+
 // //managing state for errors. empty unless inline validation (validateInput) updates key/value pair to have error. expects object {}
+
+
 
 // //temporary state for API response- not usually used (bc of <pre>) - to display response from API - array 
 const [post, setPost] = useState([]);
 
+
+
 // //make state to store error msgs to display
 // //inline validation - after inputChange , schema, validate entire form
     // //validates one key/value pair at a time -- input w/ error
-
 
 
 

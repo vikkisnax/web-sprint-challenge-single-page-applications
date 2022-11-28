@@ -11,17 +11,6 @@ import {
 
 
 const App = () => {
-  const [order, setOrder] = useState([
-    {
-      name:"",
-      size:"",
-      topping1: false,
-      topping2: false,
-      topping3: false,
-      topping4: false,
-      special:""
-    }
-  ]);
 
   return (
   <div className="App">
@@ -38,7 +27,7 @@ const App = () => {
 
     <Switch>
       <Route path="/pizza" render= {(props) => 
-        <Form history={props.history} order={order} setOrder={setOrder}/>
+        <Form history={props.history} />
       } />
       <Route path="/" component= {Home} />
     </Switch>
