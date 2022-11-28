@@ -1,10 +1,11 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 // import {
 //     Link,
 //     Route
 // } from 'react-router-dom';
 import Confirmation from "./Confirmation";
 import axios from "axios";
+import * as yup from 'yup';
 
 
 const Form = (props) => {
@@ -34,17 +35,30 @@ const [serverError, setServerError] = useState("");
 
 
 // //managing state for errors. empty unless inline validation (validateInput) updates key/value pair to have error. expects object {}
-
+// do this after useEffect-validate entire form
+const [errors, setErrors] = useState({
+    name:"",
+    size:"",
+    topping1: "",
+    topping2: "",
+    topping3: "",
+    topping4: "",
+    special:""
+})
+    //now do inline validation
 
 
 // //temporary state for API response- not usually used (bc of <pre>) - to display response from API - array 
 const [post, setPost] = useState([]);
 
 
-
 // //make state to store error msgs to display
-// //inline validation - after inputChange , schema, validate entire form
+// //INLINE validation - after inputChange , schema, validate entire form
     // //validates one key/value pair at a time -- input w/ error
+    
+    // CONTINUE HERE
+
+    
 
 
 
@@ -99,18 +113,56 @@ setOrder(newFormState)
 
 // // SCHEMA - RULES - Implement Form Validation and Error Messaging
 // do this after onChange
+//to see where code stops
+// console.log('here1')
+const formSchema = yup.object().shape({
+    name: yup.string()
+        .required("name must be at least 2 characters").min(2, "name must be at least 2 characters"),
+    size: yup.string()
+        .oneOf(['Small', 'Medium', 'Large']),
+    topping1: yup.string()
+        .when(['topping2', 'topping3', 'topping4'], {
+        is: (topping2, topping3, topping4) => !topping2 && !topping3 && !topping4, 
+        then: yup.string().required()
+        }),
+    topping2: yup.string()
+        .when(['topping1', 'topping3', 'topping4'], {
+        is: (topping1, topping3, topping4) => !topping1 && !topping3 && !topping4, 
+        then: yup.string().required()
+        }),
+    topping3: yup.string()
+        .when(['topping1', 'topping2', 'topping4'], {
+        is: (topping1, topping2, topping4) => !topping1 && !topping2 && !topping4, 
+        then: yup.string().required()
+        }),
+    topping4: yup.string()
+        .when(['topping1', 'topping2', 'topping3'], {
+        is: (topping1, topping2, topping3) => !topping1 && !topping2 && !topping3, 
+        then: yup.string().required()
+        }),
+    special: yup.string()
+        .required("Message must be at least 1 character").min(1, "'n' if no message")
+}, [
+    ['topping1', 'topping2'],
+    ['topping1', 'topping3'],
+    ['topping1', 'topping4'],
+    ['topping2', 'topping3'],
+    ['topping2', 'topping4'],
+    ['topping3', 'topping4'],
+]);
+//to see where the code stops -- if this doesn't show in console
+// console.log('here2')
 
 
 
+// // VALIDATE ENTIRE FORM - useEffect - when form state changes - compare against formSchema. returns promise. 
+useEffect(() => {
+    formSchema.isValid(order).then((valid) => {
+      console.log('is form valid?', valid)  
+      setButtonIsDisabled(!valid)
+    })
+}, [order]);
 
-
-
-
-
-
-
-
-// // VALIDATE ENTIRE FORM - when form state changes - compare against formSchema. returns promise. 
 
 
 
@@ -149,9 +201,9 @@ setOrder(newFormState)
                 data-cy="" >  */}
             
                 <option value="">--- Select Size ---</option>
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
             </select>
             {/* error msg errors.name..... */}
         </label>
