@@ -8,9 +8,9 @@ import axios from "axios";
 import * as yup from 'yup';
 
 
+//CODE 
 const Form = (props) => {
 // console.log(props)
-
 const [order, setOrder] = useState([
     {
       name:"",
@@ -24,17 +24,13 @@ const [order, setOrder] = useState([
   ]);
 
 
-// //submit button - control whether or not the form can be submitted if there are errors in form validation (in the useEffect)
+// //SUBMIT BUTTON - control whether or not the form can be submitted if there are errors in form validation (in the useEffect)
 const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
 
-
-
-// //server error -- uncomment after you make the .catch to let user know there's a server error
+// //SERVER ERROR -- uncomment after you make the .catch to let user know there's a server error
 const [serverError, setServerError] = useState("");
 
-
-
-// //managing state for errors. empty unless inline validation (validateInput) updates key/value pair to have error. expects object {}
+// //MANAGING STATE for errors. empty unless inline validation (validateInput) updates key/value pair to have error. expects object {}
 // do this after useEffect-validate entire form
 const [errors, setErrors] = useState({
     name:"",
@@ -48,28 +44,43 @@ const [errors, setErrors] = useState({
     //now do inline validation
 
 
-// //temporary state for API response- not usually used (bc of <pre>) - to display response from API - array 
+// //TEMPORARY STATE for API response- not usually used (bc of <pre>) - to display response from API - all the info you submitted - array 
 const [post, setPost] = useState([]);
 
 
 // //make state to store error msgs to display
-// //INLINE validation - after inputChange , schema, validate entire form
+// //INLINE VALIDATION - after inputChange , schema, validate entire form
     // //validates one key/value pair at a time -- input w/ error
-    
-    // CONTINUE HERE
+const validateChange = (e) => {
+    yup
+        .reach(formSchema, e.target.name)
+        .validate(
+            e.target.type === "checkbox" ? e.target.checked : e.target.value
+        )
+        //validateChange goes through chained functions above then creates a promise
+        .then((valid) => {
+            //input matches the schema 
+            //resets the error state -- error msg won't show
+            setErrors({...errors, [e.target.name]: "" })
+            //call validateChange in onChange below
+        })
+        .catch((err) => {
+            //input breaks form schema. we can capture and display error message [0] gives the first error in the error state array
+            console.log("err", err);
+            setErrors({...errors, [e.target.name]: err.errors[0]})
+        })
+// console.log(e.target.checked)
+// console.log(e)
+}
 
-    
-
-
-
-// // ONSUBMIT FUNCTION - button 
+// // ONSUBMIT FUNCTION - button - after inline validation
 const formSubmit = (e) => {
     e.preventDefault();
-
     //post - add later /api/users
     axios
         .post("https://reqres.in/api/users", order)
         .then((resp) =>{
+            console.log(resp);
             //temporary state for API response
             setPost(resp.data);
             //clears form after submit
@@ -87,7 +98,7 @@ const formSubmit = (e) => {
         })
         //let user know if there's a server error. look at codesandbox. don't see anything rn 
         .catch((err) => {
-            setServerError("There's an error from the server :(")
+            setServerError("There's an error from the server")
         })
 }
 
@@ -102,19 +113,20 @@ const inputChange = (e) => {
     const newFormState = {
         ...order, 
         [e.target.name]: 
-            e.target.type === "checkbox" ? e.target.checked : e.target.value};
+            e.target.type === "checkbox" ? e.target.checked : e.target.value
+    };
         
-    // ADD LATER - for each error msg 
-    // validateChange(e); // for each change in input, do inline validation. event variable.
+    // ADD/call LATER - for each error msg 
+    validateChange(e); 
 
-setOrder(newFormState)
+    setOrder(newFormState)
 };
 
 
 // // SCHEMA - RULES - Implement Form Validation and Error Messaging
 // do this after onChange
-//to see where code stops
-// console.log('here1')
+    //to see where code stops
+    // console.log('here1')
 const formSchema = yup.object().shape({
     name: yup.string()
         .required("name must be at least 2 characters").min(2, "name must be at least 2 characters"),
@@ -123,22 +135,22 @@ const formSchema = yup.object().shape({
     topping1: yup.string()
         .when(['topping2', 'topping3', 'topping4'], {
         is: (topping2, topping3, topping4) => !topping2 && !topping3 && !topping4, 
-        then: yup.string().required()
+        then: yup.string().required("work?")
         }),
     topping2: yup.string()
         .when(['topping1', 'topping3', 'topping4'], {
         is: (topping1, topping3, topping4) => !topping1 && !topping3 && !topping4, 
-        then: yup.string().required()
+        then: yup.string().required("work?")
         }),
     topping3: yup.string()
         .when(['topping1', 'topping2', 'topping4'], {
         is: (topping1, topping2, topping4) => !topping1 && !topping2 && !topping4, 
-        then: yup.string().required()
+        then: yup.string().required("work?")
         }),
     topping4: yup.string()
         .when(['topping1', 'topping2', 'topping3'], {
         is: (topping1, topping2, topping3) => !topping1 && !topping2 && !topping3, 
-        then: yup.string().required()
+        then: yup.string().required("work?")
         }),
     special: yup.string()
         .required("Message must be at least 1 character").min(1, "'n' if no message")
@@ -150,6 +162,7 @@ const formSchema = yup.object().shape({
     ['topping2', 'topping4'],
     ['topping3', 'topping4'],
 ]);
+//must do the above in PAIRS
 //to see where the code stops -- if this doesn't show in console
 // console.log('here2')
 
@@ -167,7 +180,7 @@ useEffect(() => {
 
 
   return (
-    //add onSubmit
+    //add onSubmit after inline validation
     <form id="pizza-form" onSubmit={formSubmit}>
         <h1>Build Your Own Pizza</h1>
 
@@ -184,7 +197,8 @@ useEffect(() => {
                     // cypress 
                 // data-cy="" 
             />
-            {/* error msg errors.name..... */}
+            {/* error msg after inline validation -- errors.name..... */}
+            {errors.name.length > 0 ? (<p className="error">{errors.name}</p>) : null}
         </label>
 
         {/* dropdown */}
@@ -206,6 +220,7 @@ useEffect(() => {
                 <option value="Large">Large</option>
             </select>
             {/* error msg errors.name..... */}
+            {errors.size.length > 0 ? (<p className="error">{errors.size}</p>) : null}
         </label>
         </div>
 
@@ -224,6 +239,7 @@ useEffect(() => {
                 // data-cy="" 
             />
             {/* error msg errors.name..... */}
+            {errors.topping1.length > 0 ? (<p className="error">{errors.topping1}</p>) : null}
         </label>
         Bacon
         </div>
@@ -242,6 +258,7 @@ useEffect(() => {
             />
             Pepperoni
             {/* error msg errors.name..... */}
+            {errors.topping2.length > 0 ? (<p className="error">{errors.topping2}</p>) : null}
         </label>
         </div>
 
@@ -259,6 +276,7 @@ useEffect(() => {
             />
             Mushrooms
             {/* error msg errors.name..... */}
+            {errors.topping3.length > 0 ? (<p className="error">{errors.topping3}</p>) : null}
         </label>
         </div>
 
@@ -276,6 +294,7 @@ useEffect(() => {
             />
             Bellpeppers
             {/* error msg errors.name..... */}
+            {errors.topping4.length > 0 ? (<p className="error">{errors.topping4}</p>) : null}
         </label>
         </div>
 
@@ -293,6 +312,7 @@ useEffect(() => {
                 // data-cy="" 
             />
             {/* error msg errors.name..... */}
+            {errors.special.length > 0 ? (<p className="error">{errors.special}</p>) : null}
         </label>
         </div>
 
@@ -307,7 +327,7 @@ useEffect(() => {
         </button>
 
         {/* add other code here for last part <pre>.... this updates info from the server that you typed into the form below the form after you submit. doesn't store multiple form submissions */}
-        {/* <pre>{JSON.stringify(post, null, 2)}</pre> */}
+        <pre>{JSON.stringify(post, null, 2)}</pre>
  
     </form>
   );
