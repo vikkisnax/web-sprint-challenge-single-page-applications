@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from "react";
-// import {
-//     Link,
-//     Route
-// } from 'react-router-dom';
 import Confirmation from "./Confirmation";
 import axios from "axios";
 import * as yup from 'yup';
+import { 
+    Link, 
+    Route,
+    // so submit goes to Confirmation component-- above return
+    Redirect 
+  } from "react-router-dom";
 
 
 //CODE 
@@ -45,7 +47,7 @@ const [errors, setErrors] = useState({
 
 
 // //TEMPORARY STATE for API response- not usually used (bc of <pre>) - to display response from API - all the info you submitted - array 
-const [post, setPost] = useState([]);
+const [post, setPost] = useState(null);
 
 
 // //make state to store error msgs to display
@@ -78,11 +80,22 @@ const formSubmit = (e) => {
     e.preventDefault();
     //post - add later /api/users
     axios
-        .post("https://reqres.in/api/users", order)
+        .post("https://reqres.in/api/orders", order)
         .then((resp) =>{
             console.log(resp);
+            // setPost(resp.data); -- don't use bc it returns an empty array above the form's array filled out
+
             //temporary state for API response
-            setPost(resp.data);
+            setPost({
+                name: resp.data.name,
+                size: resp.data.size,
+                topping1: resp.data.topping1,
+                topping2: resp.data.topping2,
+                topping3: resp.data.topping3,
+                topping4: resp.data.topping4,
+                special: resp.data.special
+            });
+
             //clears form after submit
             setOrder({
                 name:"",
@@ -95,13 +108,14 @@ const formSubmit = (e) => {
                 topping4: false,
                 special:""
             })
+            // so if u call formSubmit somewhere else, it'll return info above
+            return resp.data
         })
         //let user know if there's a server error. look at codesandbox. don't see anything rn 
         .catch((err) => {
             setServerError("There's an error from the server")
         })
 }
-
 
 
 // // ONCHANGE FUNCTION
@@ -132,37 +146,13 @@ const formSchema = yup.object().shape({
         .required("name must be at least 2 characters").min(2, "name must be at least 2 characters"),
     size: yup.string()
         .oneOf(['Small', 'Medium', 'Large']),
-    topping1: yup.string()
-        .when(['topping2', 'topping3', 'topping4'], {
-        is: (topping2, topping3, topping4) => !topping2 && !topping3 && !topping4, 
-        then: yup.string().required("work?")
-        }),
-    topping2: yup.string()
-        .when(['topping1', 'topping3', 'topping4'], {
-        is: (topping1, topping3, topping4) => !topping1 && !topping3 && !topping4, 
-        then: yup.string().required("work?")
-        }),
-    topping3: yup.string()
-        .when(['topping1', 'topping2', 'topping4'], {
-        is: (topping1, topping2, topping4) => !topping1 && !topping2 && !topping4, 
-        then: yup.string().required("work?")
-        }),
-    topping4: yup.string()
-        .when(['topping1', 'topping2', 'topping3'], {
-        is: (topping1, topping2, topping3) => !topping1 && !topping2 && !topping3, 
-        then: yup.string().required("work?")
-        }),
-    special: yup.string()
-        .required("Message must be at least 1 character").min(1, "'n' if no message")
-}, [
-    ['topping1', 'topping2'],
-    ['topping1', 'topping3'],
-    ['topping1', 'topping4'],
-    ['topping2', 'topping3'],
-    ['topping2', 'topping4'],
-    ['topping3', 'topping4'],
-]);
-//must do the above in PAIRS
+        special: yup.string()
+        .required("Message must be at least 1 character").min(1, "'n' if no message"),
+    topping1: yup.string(),
+    topping2: yup.string(),
+    topping3: yup.string(),
+    topping4: yup.string(),
+});
 //to see where the code stops -- if this doesn't show in console
 // console.log('here2')
 
@@ -176,6 +166,13 @@ useEffect(() => {
     })
 }, [order]);
 
+
+// TO GO TO CONFIRMATION page after you submit form -- do this after you do yup and add a confirmation Route path to App 
+// 'push to' lets you go back to /pizza url
+// you're also passing the 'post' state with the filled out form to Confirmation
+if (post) {
+    return <Redirect push to={{ pathname: "/confirmation", state: post}}  />
+}
 
 
 
@@ -228,6 +225,8 @@ useEffect(() => {
         {/* 3 Checkboxes */}
         <div className="topping1-check">
         <label htmlFor="topping1-check">
+            {/* edit spacing */}
+            Optional Toppings
             <input
                 id="topping1-check"
                 type="checkbox"
@@ -327,8 +326,11 @@ useEffect(() => {
         </button>
 
         {/* add other code here for last part <pre>.... this updates info from the server that you typed into the form below the form after you submit. doesn't store multiple form submissions */}
-        <pre>{JSON.stringify(post, null, 2)}</pre>
- 
+        {/* if post is true (if I get info typed into form back from the API), then it'll do the next part (show the info on the screen)*/}
+        {/* wont show bc we redirect to Confirmation component, so we'll give Confirmation access to the form data in 'post' state */}
+        {post && (
+            <pre>{JSON.stringify(post, null, 2)}</pre>
+        )}
     </form>
   );
 };

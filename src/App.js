@@ -26,6 +26,9 @@ const App = () => {
     </nav>
 
     <Switch>
+      {/* add confirmation after you did everything else except style site */}
+      <Route path="/confirmation" render={() => 
+          <Confirmation />}/>
       <Route path="/pizza" render= {(props) => 
         <Form history={props.history} />
       } />
