@@ -42,8 +42,7 @@ const [errors, setErrors] = useState({
     topping3: "",
     topping4: "",
     special:""
-})
-    //now do inline validation
+}) //now do inline validation
 
 
 // //TEMPORARY STATE for API response- not usually used (bc of <pre>) - to display response from API - all the info you submitted - array 
@@ -155,7 +154,6 @@ const formSchema = yup.object().shape({
 });
 //to see where the code stops -- if this doesn't show in console
 // console.log('here2')
-
 
 
 // // VALIDATE ENTIRE FORM - useEffect - when form state changes - compare against formSchema. returns promise. 
