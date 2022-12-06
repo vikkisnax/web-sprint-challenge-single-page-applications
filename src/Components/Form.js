@@ -1,13 +1,74 @@
 import React, {useState, useEffect} from "react";
-import Confirmation from "./Confirmation";
+// import Confirmation from "./Confirmation";
 import axios from "axios";
 import * as yup from 'yup';
 import { 
-    Link, 
-    Route,
     // so submit goes to Confirmation component-- above return
     Redirect 
   } from "react-router-dom";
+import styled from "styled-components";
+
+
+
+//STYLES
+const PizzaContainer = styled.div`
+  box-sizing: border-box;
+  width: 50%;
+  border: solid antiquewhite 3px;
+  margin-left: 300px;
+  padding-bottom:100px;
+`
+const HeadingDiv = styled.div`
+  display:block;
+`
+
+const PizzaImg=styled.div`
+    height:400px;
+    width: 100%;
+    background-image: url('https://images.unsplash.com/photo-1627461985459-51600559fffe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80');
+    background-size: cover;
+`
+
+const HeaderH1Text = styled.h1`
+    font-family: Avenir, Arial, Helvetica;
+    color: cadetblue;
+    text-align:center;
+    margin:10px;
+`
+
+const TitleH5Text = styled.h5`
+    font-family: Avenir, Arial, Helvetica;
+    color: midnightblue;
+    background: antiquewhite;
+    padding: 10px;
+    margin: 10px 0px;
+`
+
+const Spacing = styled.div`
+  margin: 10px;
+`
+
+const CheckBoxSpace = styled.input`
+    margin-right:5px;
+`
+
+const SpecialInputBox =styled.input`
+    padding: 20px 40px;
+`
+
+// button style
+const ButtonStyle = styled.button`
+    border: solid 2px;
+    border-radius: 5px;
+    color: #2D3E50;
+    font-family: 'Avenir';
+    font-weight: bold;
+    height: 40px;
+    text-align: center;
+    width: 200px;    
+    margin: 10px;
+`
+
 
 
 //CODE 
@@ -17,10 +78,10 @@ const [order, setOrder] = useState([
     {
       name:"",
       size:"",
-      topping1: false,
-      topping2: false,
-      topping3: false,
-      topping4: false,
+      baon: false,
+      pepperoni: false,
+      mushrooms: false,
+      bellpeppers: false,
       special:""
     }
   ]);
@@ -37,10 +98,10 @@ const [serverError, setServerError] = useState("");
 const [errors, setErrors] = useState({
     name:"",
     size:"",
-    topping1: "",
-    topping2: "",
-    topping3: "",
-    topping4: "",
+    bacon: "",
+    pepperoni: "",
+    mushrooms: "",
+    bellpeppers: "",
     special:""
 }) //now do inline validation
 
@@ -88,10 +149,10 @@ const formSubmit = (e) => {
             setPost({
                 name: resp.data.name,
                 size: resp.data.size,
-                topping1: resp.data.topping1,
-                topping2: resp.data.topping2,
-                topping3: resp.data.topping3,
-                topping4: resp.data.topping4,
+                bacon: resp.data.bacon,
+                pepperoni: resp.data.pepperoni,
+                mushrooms: resp.data.mushrooms,
+                bellpeppers: resp.data.bellpeppers,
                 special: resp.data.special
             });
 
@@ -101,10 +162,10 @@ const formSubmit = (e) => {
                 // dropdown
                 size:"",
                 // checkbox
-                topping1: false,
-                topping2: false,
-                topping3: false,
-                topping4: false,
+                bacon: false,
+                pepperoni: false,
+                mushrooms: false,
+                bellpeppers: false,
                 special:""
             })
             // so if u call formSubmit somewhere else, it'll return info above
@@ -147,10 +208,10 @@ const formSchema = yup.object().shape({
         .oneOf(['Small', 'Medium', 'Large']),
         special: yup.string()
         .required("Message must be at least 1 character").min(1, "'n' if no message"),
-    topping1: yup.string(),
-    topping2: yup.string(),
-    topping3: yup.string(),
-    topping4: yup.string(),
+    bacon: yup.string(),
+    pepperoni: yup.string(),
+    mushrooms: yup.string(),
+    bellpeppers: yup.string(),
 });
 //to see where the code stops -- if this doesn't show in console
 // console.log('here2')
@@ -176,11 +237,15 @@ if (post) {
 
   return (
     //add onSubmit after inline validation
-    <form id="pizza-form" onSubmit={formSubmit}>
-        <h1>Build Your Own Pizza</h1>
-
-        <label htmlFor="name-input">
-            Name
+    // <PizzaContainer>
+    <PizzaContainer id="pizza-form" >
+        <HeadingDiv>
+            <HeaderH1Text>Build Your Own Pizza</HeaderH1Text>
+            {/* for pic */}
+            <PizzaImg></PizzaImg>
+        </HeadingDiv>
+        <TitleH5Text>Name</TitleH5Text>
+        <Spacing htmlFor="name-input">
             <input
                 id="name-input"
                 type="text"
@@ -194,60 +259,59 @@ if (post) {
             />
             {/* error msg after inline validation -- errors.name..... */}
             {errors.name.length > 0 ? (<p className="error">{errors.name}</p>) : null}
-        </label>
+        </Spacing>
 
         {/* dropdown */}
         <div className="size-dropdown">
-        <label htmlFor="size-dropdown">
-            Size
-            <select
-                id="size-dropdown"
-                name="size"
-                value={order.size}
-                // ADD 
-                onChange={inputChange}>
-                {/* cypress - remove  > above and use it below
-                data-cy="" >  */}
-            
-                <option value="">--- Select Size ---</option>
-                <option value="Small">Small</option>
-                <option value="Medium">Medium</option>
-                <option value="Large">Large</option>
-            </select>
-            {/* error msg errors.name..... */}
-            {errors.size.length > 0 ? (<p className="error">{errors.size}</p>) : null}
-        </label>
+            <TitleH5Text>Size</TitleH5Text>
+            <Spacing htmlFor="size-dropdown">
+                <select
+                    id="size-dropdown"
+                    name="size"
+                    value={order.size}
+                    // ADD 
+                    onChange={inputChange}>
+                    {/* cypress - remove  > above and use it below
+                    data-cy="" >  */}
+                
+                    <option value="">--- Select Size ---</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                </select>
+                {/* error msg errors.name..... */}
+                {errors.size.length > 0 ? (<p className="error">{errors.size}</p>) : null}
+            </Spacing>
         </div>
 
 
         {/* 3 Checkboxes */}
-        <div className="topping1-check">
-        <label htmlFor="topping1-check">
-            {/* edit spacing */}
-            Optional Toppings
-            <input
-                id="topping1-check"
-                type="checkbox"
-                name="topping1"
-                checked={order.topping1}
-                    // ADD
-                onChange={inputChange}
-                    // cypress 
-                // data-cy="" 
-            />
-            {/* error msg errors.name..... */}
-            {errors.topping1.length > 0 ? (<p className="error">{errors.topping1}</p>) : null}
-        </label>
-        Bacon
+        <div className="bacon-check">
+            <TitleH5Text>Optional Toppings</TitleH5Text>
+            <Spacing htmlFor="bacon-check">
+                <CheckBoxSpace
+                    id="bacon-check"
+                    type="checkbox"
+                    name="bacon"
+                    checked={order.bacon}
+                        // ADD
+                    onChange={inputChange}
+                        // cypress 
+                    // data-cy="" 
+                />
+                Bacon
+                {/* error msg errors.name..... */}
+                {errors.bacon.length > 0 ? (<p className="error">{errors.bacon}</p>) : null}
+            </Spacing>
         </div>
 
-        <div className="topping2-check">
-        <label htmlFor="topping2-check">
-            <input
-                id="topping2-check"
+        <div className="pepperoni-check">
+        <Spacing htmlFor="pepperoni-check">
+            <CheckBoxSpace
+                id="pepperoni-check"
                 type="checkbox"
-                name="topping2"
-                checked={order.topping2}
+                name="pepperoni"
+                checked={order.pepperoni}
                     // ADD
                 onChange={inputChange}
                     // cypress 
@@ -255,17 +319,17 @@ if (post) {
             />
             Pepperoni
             {/* error msg errors.name..... */}
-            {errors.topping2.length > 0 ? (<p className="error">{errors.topping2}</p>) : null}
-        </label>
+            {errors.pepperoni.length > 0 ? (<p className="error">{errors.pepperoni}</p>) : null}
+        </Spacing>
         </div>
 
-        <div className="topping3-check">
-        <label htmlFor="topping3-check">
-            <input
-                id="topping3-check"
+        <div className="mushrooms-check">
+        <Spacing htmlFor="mushrooms-check">
+            <CheckBoxSpace
+                id="mushrooms-check"
                 type="checkbox"
-                name="topping3"
-                checked={order.topping3}
+                name="mushrooms"
+                checked={order.mushrooms}
                     // ADD
                 onChange={inputChange}
                     // cypress 
@@ -273,17 +337,17 @@ if (post) {
             />
             Mushrooms
             {/* error msg errors.name..... */}
-            {errors.topping3.length > 0 ? (<p className="error">{errors.topping3}</p>) : null}
-        </label>
+            {errors.mushrooms.length > 0 ? (<p className="error">{errors.mushrooms}</p>) : null}
+        </Spacing>
         </div>
 
-        <div className="topping4-check">
-        <label htmlFor="topping4-check">
-            <input
-                id="topping4-check"
+        <div className="bellpeppers-check">
+        <Spacing htmlFor="bellpeppers-check">
+            <CheckBoxSpace
+                id="bellpeppers-check"
                 type="checkbox"
-                name="topping4"
-                checked={order.topping4}
+                name="bellpeppers"
+                checked={order.bellpeppers}
                     // ADD
                 onChange={inputChange}
                     // cypress 
@@ -291,45 +355,50 @@ if (post) {
             />
             Bellpeppers
             {/* error msg errors.name..... */}
-            {errors.topping4.length > 0 ? (<p className="error">{errors.topping4}</p>) : null}
-        </label>
+            {errors.bellpeppers.length > 0 ? (<p className="error">{errors.bellpeppers}</p>) : null}
+        </Spacing>
         </div>
 
         <div className="special-text">
-        <label htmlFor="special-text">
-            Special Request
-            <input
-                id="special-text"
-                type="text"
-                name="special"
-                value={order.special}
-                    // ADD
-                onChange={inputChange}
-                    // cypress 
-                // data-cy="" 
-            />
-            {/* error msg errors.name..... */}
-            {errors.special.length > 0 ? (<p className="error">{errors.special}</p>) : null}
-        </label>
+            <TitleH5Text>Special Request </TitleH5Text>
+            *Required
+            <Spacing htmlFor="special-text">
+                <SpecialInputBox
+                    id="special-text"
+                    type="text"
+                    name="special"
+                    value={order.special}
+                        // ADD
+                    onChange={inputChange}
+                        // cypress 
+                    // data-cy="" 
+                />
+                {/* error msg errors.name..... */}
+                {errors.special.length > 0 ? (<p className="error">{errors.special}</p>) : null}
+            </Spacing>
+            
         </div>
 
         {/*  SUBMIT BUTTON? */}
 
-        <button 
-        id="order-button"
-        type="submit" 
-        // instead of using 'value'
-        disabled={buttonIsDisabled}>
-            Add to Order
-        </button>
+        <ButtonStyle 
+            id="order-button"
+            type="button" 
+            // instead of using 'value'
+            disabled={buttonIsDisabled}
+            onClick={formSubmit}
+        >
+            Add to Order $10.99
+        </ButtonStyle>
 
-        {/* add other code here for last part <pre>.... this updates info from the server that you typed into the form below the form after you submit. doesn't store multiple form submissions */}
+        {/* add <pre>.... code here for last part. this updates info from the server that you typed into the form and puts the array below the form after you submit. doesn't store multiple form submissions */}
         {/* if post is true (if I get info typed into form back from the API), then it'll do the next part (show the info on the screen)*/}
-        {/* wont show bc we redirect to Confirmation component, so we'll give Confirmation access to the form data in 'post' state */}
+        {/* wont show bc (above) we redirect to Confirmation component after we submit, so we'll give Confirmation access to the form data in 'post' state */}
         {post && (
             <pre>{JSON.stringify(post, null, 2)}</pre>
         )}
-    </form>
+    </PizzaContainer>
+// </PizzaContainer>
   );
 };
 export default Form;

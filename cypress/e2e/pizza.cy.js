@@ -11,7 +11,7 @@ describe("test our form inputs", () => {
             .should("have.value", "Victoria");
 
         // //CHECKBOXES - doesn't need to be selected to submit
-        cy.get('#topping1-check')
+        cy.get('#bacon-check')
         .check()
         //.uncheck()
 

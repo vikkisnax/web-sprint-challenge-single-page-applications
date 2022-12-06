@@ -1,24 +1,42 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 //styles
 import styled from "styled-components";
 
 
+
 const Home = (props) => {
-// console.log(props) //shows react router props in console
+console.log(props) //shows react router props in console. 
 
 //STYLES - pic and button
-//style for pic
+//pic
 const PizzaDiv = styled.div`
   height:400px;
   width: 100%;
   background-image: url('https://images.unsplash.com/photo-1627461985459-51600559fffe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80');
   background-size: cover;
 `
+//button 
+const PizzaButton = styled.button`
+  margin: 280px;
+  border: solid 2px;
+  border-radius: 5px;
+	color: #2D3E50;
+  font-family: 'Avenir';
+	font-weight: bold;
+  height: 40px;
+  text-align: center;
+  width: 200px;
+`
+
+  const history=useHistory();
 
   return (
+  
     <PizzaDiv id="order-pizza">
-       <button>hi</button>
+       <PizzaButton className="pizza-pic-button" onClick={ ()=> history.push("/pizza", {from: "Home"})}>Build Your Own Pizza</PizzaButton>
     </PizzaDiv>
+
   );
 };
 export default Home;

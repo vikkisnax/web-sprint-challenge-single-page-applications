@@ -37,6 +37,7 @@ const LinkButton = styled.button`
 // margin spaces the buttons - good link below
 
 
+//FUNCTION
 const App = () => {
   return (
   <div className="App">
@@ -60,7 +61,7 @@ const App = () => {
     </Nav>
 
     <Switch>
-      {/* add confirmation after you did everything else except style site */}
+      {/* add confirmation after you did everything else (but not style the site yet) */}
       <Route path="/confirmation" render={() => 
           <Confirmation />}/>
       <Route path="/pizza" render= {(props) => 
